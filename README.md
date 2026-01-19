@@ -51,6 +51,15 @@ Run with minimal output (summary only):
 python test_parser.py --quiet
 ```
 
+## API Usage
+
+Start the server:
+```bash
+uvicorn api:app --reload
+```
+Visit http://127.0.0.1:8000/docs for interactive API docs
+
+
 ## Project Structure
 
 ```
