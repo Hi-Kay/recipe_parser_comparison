@@ -1,0 +1,14 @@
+REWE Supermarkt
+Berlin Mitte
+
+Datum: 16.01.2024
+Beleg-Nr: 8821-5531
+
+Artikel:
+- Vollmilch 1L          1,29€
+- Schwarzbrot           2,49€
+- Äpfel 1kg             3,99€
+
+Zwischensumme:          7,77€
+MwSt (7%):              0,51€
+GESAMT:                 8,28€

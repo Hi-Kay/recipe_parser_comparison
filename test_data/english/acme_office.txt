@@ -1,0 +1,15 @@
+ACME Office Supplies
+123 Business St, New York
+Date: 2024-01-15
+Invoice #: INV-2024-001
+
+Items:
+- Paper (A4, 5 reams) ... $45.00
+- Pens (Blue, pack of 12) ... $8.50
+- Stapler ... $12.99
+
+Subtotal: $66.49
+Tax (8%): $5.32
+TOTAL: $71.81
+
+Thank you for your business!

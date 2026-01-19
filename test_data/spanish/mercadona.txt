@@ -1,0 +1,11 @@
+Mercadona S.A.
+Madrid Centro
+
+Fecha: 18/01/2024
+
+Productos:
+- Pan integral     1,50€
+- Leche            0,99€
+- Queso            3,45€
+
+Total:             5,94€

@@ -1,0 +1,5 @@
+# environment variables (contains API keys!)
+.env
+
+# python virtual environment
+venv/
