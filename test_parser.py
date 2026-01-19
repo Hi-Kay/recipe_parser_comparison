@@ -83,38 +83,49 @@ def compare_parsers(filepath, verbose=True):
             print(f"❌ Failed: {e}")
         results['llm'] = {'success': False, 'error': str(e)}
     
-    # Comparison Summary
-    if verbose:
+    # Comparison Summary (same for both verbose and quiet)
+    if not verbose:
+        # In quiet mode, show filename first
+        print(f"\n{filepath}:")
+        print("-" * 70)
+    else:
         print("\n📊 COMPARISON:")
         print("-" * 70)
+    
+    # Same comparison logic for both modes
+    if results['regex']['success'] and results['llm']['success']:
+        regex_data = results['regex']['data']
+        llm_data = results['llm']['data']
         
-        if results['regex']['success'] and results['llm']['success']:
-            regex_data = results['regex']['data']
-            llm_data = results['llm']['data']
-            
-            merchant_match = regex_data.get('merchant') == llm_data.get('merchant')
-            total_match = regex_data.get('total') == llm_data.get('total')
-            items_match = len(regex_data.get('items', [])) == len(llm_data.get('items', []))
-            
-            print(f"Merchant: {'✅ Match' if merchant_match else '⚠️  Different'}")
-            print(f"Total: {'✅ Match' if total_match else '⚠️  Different'}")
-            if not total_match:
-                regex_total = regex_data.get('total')
-                llm_total = llm_data.get('total')
-                
-                regex_str = f"${regex_total:.2f}" if regex_total is not None else "N/A"
-                llm_str = f"${llm_total:.2f}" if llm_total is not None else "N/A"
-                print(f"  Regex: {regex_str}, LLM: {llm_str}")
-            print(f"Items count: {'✅ Match' if items_match else '⚠️  Different'} (Regex={len(regex_data.get('items', []))}, LLM={len(llm_data.get('items', []))})")
-            
-        elif results['regex']['success']:
-            print("⚠️  Only Regex succeeded")
-        elif results['llm']['success']:
-            print("💡 Only LLM succeeded (Regex failed on format)")
-        else:
-            print("❌ Both parsers failed")
+        merchant_match = regex_data.get('merchant') == llm_data.get('merchant')
+        total_match = regex_data.get('total') == llm_data.get('total')
+        items_match = len(regex_data.get('items', [])) == len(llm_data.get('items', []))
         
+        print(f"Merchant: {'✅ Match' if merchant_match else '⚠️  Different'}")
+        print(f"Total: {'✅ Match' if total_match else '⚠️  Different'}")
+        
+        if not total_match:
+            regex_total = regex_data.get('total')
+            llm_total = llm_data.get('total')
+            
+            # Format totals safely
+            regex_str = f"${regex_total:.2f}" if regex_total is not None else "N/A"
+            llm_str = f"${llm_total:.2f}" if llm_total is not None else "N/A"
+            print(f"  Regex: {regex_str}, LLM: {llm_str}")
+        
+        print(f"Items count: {'✅ Match' if items_match else '⚠️  Different'} (Regex={len(regex_data.get('items', []))}, LLM={len(llm_data.get('items', []))})")
+        
+    elif results['regex']['success']:
+        print("⚠️  Only Regex succeeded")
+    elif results['llm']['success']:
+        print("💡 Only LLM succeeded (Regex failed on format)")
+    else:
+        print("❌ Both parsers failed")
+    
+    if verbose:
         print("=" * 70)
+    else:
+        print("-" * 70)
     
     return results
 
@@ -173,35 +184,16 @@ def run_tests(files=None, test_data_dir="test_data", verbose=True):
         if not results['regex']['success'] and not results['llm']['success']:
             summary['both_failed'] += 1
     
-    # Final Summary
-    print("\n" + "=" * 70)
-    print("📈 FINAL SUMMARY")
-    print("=" * 70)
-    print(f"Total files tested: {summary['total']}")
-    print(f"Regex successes: {summary['regex_success']} ({summary['regex_success']/summary['total']*100:.0f}%)")
-    print(f"LLM successes: {summary['llm_success']} ({summary['llm_success']/summary['total']*100:.0f}%)")
-    print(f"Both succeeded: {summary['both_success']}")
-    print(f"Both failed: {summary['both_failed']}")
-    print("-" * 70)
-    print(f"💵 RECEIPT TOTALS:")
-    print(f"Combined total of all receipts: ${summary['total_receipt_amount']:.2f}")
-    if summary['llm_success'] > 0:
-        print(f"Average receipt amount: ${summary['total_receipt_amount']/summary['llm_success']:.2f}")
-    print("=" * 70)
-    
-    # Insights
-    llm_only = summary['llm_success'] - summary['both_success']
-    if llm_only > 0:
-        print(f"\n💡 LLM handled {llm_only} receipt(s) that Regex couldn't!")
-    
-    print()
+    # Add a blank line at the end in quiet mode
+    if not verbose:
+        print()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Test receipt parsers')
     parser.add_argument('files', nargs='*', help='Specific files to test (optional)')
     parser.add_argument('--list', '-l', action='store_true', help='List all test files')
     parser.add_argument('--all', '-a', action='store_true', help='Test all files')
-    parser.add_argument('--quiet', '-q', action='store_true', help='Minimal output (summary only)')
+    parser.add_argument('--quiet', '-q', action='store_true', help='Minimal output (compact comparison)')
     
     args = parser.parse_args()
     
